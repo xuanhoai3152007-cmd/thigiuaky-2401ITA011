@@ -1,5 +1,7 @@
+import { useState } from "react";
 import Header from "./components/Header";
 import DanhSachMon from "./components/DanhSachMon";
+import GioHang from "./components/GioHang";
 
 const dsMon = [
   {
@@ -61,16 +63,54 @@ const dsMon = [
 ];
 
 function App() {
+  const [gio, setGio] = useState([]);
+  const [idDangChon, setIdDangChon] = useState(null);
+
+  const datMon = (id) => {
+    setGio((gioCu) => {
+      const daCo = gioCu.find((item) => item.id === id);
+
+      if (daCo) {
+        return gioCu.map((item) =>
+          item.id === id
+            ? {
+                ...item,
+                soLuong: item.soLuong + 1,
+              }
+            : item
+        );
+      }
+
+      return [
+        ...gioCu,
+        {
+          id,
+          soLuong: 1,
+        },
+      ];
+    });
+  };
+
+  const tongPhan = gio.reduce(
+    (tong, item) => tong + item.soLuong,
+    0
+  );
+
   return (
     <>
-      <Header tongPhan={0} />
+      <Header tongPhan={tongPhan} />
 
       <main>
         <DanhSachMon
           dsMon={dsMon}
-          idDangChon={null}
-          onChon={() => {}}
-          onDat={() => {}}
+          idDangChon={idDangChon}
+          onChon={setIdDangChon}
+          onDat={datMon}
+        />
+
+        <GioHang
+          gio={gio}
+          dsMon={dsMon}
         />
       </main>
     </>
