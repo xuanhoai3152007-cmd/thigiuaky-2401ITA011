@@ -1,13 +1,13 @@
-function Header({ tongPhan }) {
-  const tenQuan = import.meta.env.VITE_TEN_QUAN;
+const tenQuan = import.meta.env.VITE_TEN_QUAN;
 
+function Header({ tongPhan }) {
   return (
     <header>
       <h1>{tenQuan}</h1>
 
-      <div>
-        Giỏ: <span data-testid="tong-phan">{tongPhan}</span> phần
-      </div>
+      <p data-testid="tong-phan">
+        Giỏ: {tongPhan} phần
+      </p>
     </header>
   );
 }

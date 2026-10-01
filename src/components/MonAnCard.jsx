@@ -1,8 +1,18 @@
 function dinhDangGia(gia) {
-  return gia.toLocaleString("vi-VN") + " đ";
+  return `${gia.toLocaleString("vi-VN")} đ`;
 }
 
-function MonAnCard({ mon, dangChon, onChon, onDat }) {
+function MonAnCard({
+  mon,
+  dangChon,
+  onChon,
+  onDat,
+}) {
+  function xuLyDatMon(e) {
+    e.stopPropagation();
+    onDat(mon.id);
+  }
+
   return (
     <article
       className={dangChon ? "dang-chon" : ""}
@@ -19,11 +29,9 @@ function MonAnCard({ mon, dangChon, onChon, onDat }) {
       )}
 
       <button
+        type="button"
         disabled={mon.daHet}
-        onClick={(e) => {
-          e.stopPropagation();
-          onDat(mon.id);
-        }}
+        onClick={xuLyDatMon}
       >
         Đặt món
       </button>

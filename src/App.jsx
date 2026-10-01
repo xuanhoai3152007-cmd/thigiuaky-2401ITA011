@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import Header from "./components/Header";
 import DanhSachMon from "./components/DanhSachMon";
 import GioHang from "./components/GioHang";
+import FormDatMon from "./components/FormDatMon";
+import Khung from "./components/Khung";
+
+import useLocalStorage from "./hooks/useLocalStorage";
 
 const dsMon = [
   {
@@ -49,35 +54,52 @@ const dsMon = [
   {
     id: 7,
     ten: "Chè bắp",
-    moTa: "Chè bắp ngọt dịu",
+    moTa: "Chè bắp Huế ngọt thơm",
     gia: 25000,
     daHet: true,
   },
   {
     id: 8,
-    ten: "Tôm chua",
-    moTa: "Tôm chua đặc sản Huế",
-    gia: 50000,
+    ten: "Cơm âm phủ",
+    moTa: "Cơm âm phủ đặc sản Huế",
+    gia: 45000,
     daHet: false,
   },
 ];
 
 function App() {
-  const [gio, setGio] = useState([]);
+  const tenQuan = import.meta.env.VITE_TEN_QUAN;
+
+  const [gio, setGio] = useLocalStorage("gio-hang", []);
   const [idDangChon, setIdDangChon] = useState(null);
+  const [thongBao, setThongBao] = useState("");
+  const [formKey, setFormKey] = useState(0);
 
-  const datMon = (id) => {
+  const tongPhan = gio.reduce(
+    (tong, dong) => tong + dong.soLuong,
+    0
+  );
+
+  useEffect(() => {
+    if (tongPhan === 0) {
+      document.title = tenQuan;
+    } else {
+      document.title = `(${tongPhan}) ${tenQuan}`;
+    }
+  }, [tongPhan, tenQuan]);
+
+  function datMon(id) {
     setGio((gioCu) => {
-      const daCo = gioCu.find((item) => item.id === id);
+      const monDaCo = gioCu.find((dong) => dong.id === id);
 
-      if (daCo) {
-        return gioCu.map((item) =>
-          item.id === id
+      if (monDaCo) {
+        return gioCu.map((dong) =>
+          dong.id === id
             ? {
-                ...item,
-                soLuong: item.soLuong + 1,
+                ...dong,
+                soLuong: dong.soLuong + 1,
               }
-            : item
+            : dong
         );
       }
 
@@ -89,12 +111,19 @@ function App() {
         },
       ];
     });
-  };
+  }
 
-  const tongPhan = gio.reduce(
-    (tong, item) => tong + item.soLuong,
-    0
-  );
+  function xoaGioHang() {
+    setGio([]);
+  }
+
+  function guiDon(thongTin) {
+    setThongBao(`Đã nhận đơn của ${thongTin.hoTen}`);
+
+    setGio([]);
+
+    setFormKey((keyCu) => keyCu + 1);
+  }
 
   return (
     <>
@@ -108,10 +137,30 @@ function App() {
           onDat={datMon}
         />
 
-        <GioHang
-          gio={gio}
-          dsMon={dsMon}
-        />
+        <Khung
+          tieuDe="Giỏ hàng"
+          hanhDong={
+            <button type="button" onClick={xoaGioHang}>
+              Xóa giỏ hàng
+            </button>
+          }
+        >
+          <GioHang gio={gio} dsMon={dsMon} />
+        </Khung>
+
+        <Khung tieuDe="Thông tin nhận món">
+          <FormDatMon
+            key={formKey}
+            onGui={guiDon}
+            choPhepGui={gio.length > 0}
+          />
+        </Khung>
+
+        {thongBao && (
+          <p role="status">
+            {thongBao}
+          </p>
+        )}
       </main>
     </>
   );

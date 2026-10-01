@@ -1,4 +1,4 @@
-import MonAnCard from "./monancard";
+import MonAnCard from "./MonAnCard";
 
 function DanhSachMon({
   dsMon,
