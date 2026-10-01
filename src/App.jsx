@@ -5,7 +5,6 @@ import DanhSachMon from "./components/DanhSachMon";
 import GioHang from "./components/GioHang";
 import FormDatMon from "./components/FormDatMon";
 import Khung from "./components/Khung";
-
 import useLocalStorage from "./hooks/useLocalStorage";
 
 const dsMon = [
@@ -70,16 +69,28 @@ const dsMon = [
 function App() {
   const tenQuan = import.meta.env.VITE_TEN_QUAN;
 
-  const [gio, setGio] = useLocalStorage("gio-hang", []);
+  // Giỏ hàng
+  const [gio, setGio] = useLocalStorage(
+    "gio-hang",
+    []
+  );
+
+  // Món đang được chọn
   const [idDangChon, setIdDangChon] = useState(null);
+
+  // Thông báo gửi đơn thành công
   const [thongBao, setThongBao] = useState("");
+
+  // Dùng để reset FormDatMon
   const [formKey, setFormKey] = useState(0);
 
+  // Tổng số phần
   const tongPhan = gio.reduce(
     (tong, dong) => tong + dong.soLuong,
     0
   );
 
+  // Cập nhật tiêu đề trình duyệt
   useEffect(() => {
     if (tongPhan === 0) {
       document.title = tenQuan;
@@ -88,10 +99,14 @@ function App() {
     }
   }, [tongPhan, tenQuan]);
 
+  // Đặt món
   function datMon(id) {
     setGio((gioCu) => {
-      const monDaCo = gioCu.find((dong) => dong.id === id);
+      const monDaCo = gioCu.find(
+        (dong) => dong.id === id
+      );
 
+      // Món đã có -> tăng số lượng
       if (monDaCo) {
         return gioCu.map((dong) =>
           dong.id === id
@@ -103,6 +118,7 @@ function App() {
         );
       }
 
+      // Món chưa có -> thêm mới
       return [
         ...gioCu,
         {
@@ -113,15 +129,22 @@ function App() {
     });
   }
 
+  // Xóa toàn bộ giỏ hàng
   function xoaGioHang() {
     setGio([]);
   }
 
+  // Gửi đơn
   function guiDon(thongTin) {
-    setThongBao(`Đã nhận đơn của ${thongTin.hoTen}`);
+    setThongBao(
+      `Đã nhận đơn của ${thongTin.hoTen}`
+    );
 
+    // Làm rỗng giỏ
     setGio([]);
 
+    // Đổi key để FormDatMon được tạo lại
+    // => state của form trở về giá trị ban đầu
     setFormKey((keyCu) => keyCu + 1);
   }
 
@@ -130,6 +153,7 @@ function App() {
       <Header tongPhan={tongPhan} />
 
       <main>
+        {/* THỰC ĐƠN */}
         <DanhSachMon
           dsMon={dsMon}
           idDangChon={idDangChon}
@@ -137,17 +161,25 @@ function App() {
           onDat={datMon}
         />
 
+        {/* GIỎ HÀNG */}
         <Khung
           tieuDe="Giỏ hàng"
           hanhDong={
-            <button type="button" onClick={xoaGioHang}>
+            <button
+              type="button"
+              onClick={xoaGioHang}
+            >
               Xóa giỏ hàng
             </button>
           }
         >
-          <GioHang gio={gio} dsMon={dsMon} />
+          <GioHang
+            gio={gio}
+            dsMon={dsMon}
+          />
         </Khung>
 
+        {/* FORM ĐẶT MÓN */}
         <Khung tieuDe="Thông tin nhận món">
           <FormDatMon
             key={formKey}
@@ -156,6 +188,7 @@ function App() {
           />
         </Khung>
 
+        {/* THÔNG BÁO THÀNH CÔNG */}
         {thongBao && (
           <p role="status">
             {thongBao}

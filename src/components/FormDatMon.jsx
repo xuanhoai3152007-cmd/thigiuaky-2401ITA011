@@ -12,6 +12,7 @@ function FormDatMon({ onGui, choPhepGui }) {
 
   const oHoTenRef = useRef(null);
 
+  // Khi form vừa xuất hiện, tự động focus vào ô Họ tên
   useEffect(() => {
     oHoTenRef.current?.focus();
   }, []);
@@ -62,10 +63,12 @@ function FormDatMon({ onGui, choPhepGui }) {
       soDienThoai: loiSoDienThoai,
     });
 
+    // Có lỗi thì không gọi onGui
     if (loiHoTen || loiSoDienThoai) {
       return;
     }
 
+    // Hợp lệ thì gửi dữ liệu đã trim
     onGui({
       hoTen: hoTen.trim(),
       soDienThoai: soDienThoai.trim(),
@@ -129,7 +132,10 @@ function FormDatMon({ onGui, choPhepGui }) {
         />
       </div>
 
-      <button type="submit" disabled={!choPhepGui}>
+      <button
+        type="submit"
+        disabled={!choPhepGui}
+      >
         Gửi đơn
       </button>
     </form>

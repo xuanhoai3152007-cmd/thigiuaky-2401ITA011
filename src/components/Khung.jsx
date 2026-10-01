@@ -1,7 +1,7 @@
 function Khung({ tieuDe, hanhDong, children }) {
   return (
     <section>
-      <div>
+      <div className="tieu-de-khung">
         <h2>{tieuDe}</h2>
 
         {hanhDong}
